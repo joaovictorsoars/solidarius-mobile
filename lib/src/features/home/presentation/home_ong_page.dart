@@ -7,20 +7,21 @@ import 'package:hackathon/src/core/colors.dart';
 import 'package:hackathon/src/core/routes.dart';
 import 'package:hackathon/src/features/home/domain/entities/doacao.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class HomeOngPage extends StatefulWidget {
+  const HomeOngPage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomeOngPage> createState() => _HomeOngPageState();
 }
 
-class _HomePageState extends State<HomePage>
+class _HomeOngPageState extends State<HomeOngPage>
     with SingleTickerProviderStateMixin {
   late final GoogleMapController _mapController;
 
   Position? myLocation;
   bool isLoadingMap = true;
   int perfil = 0;
+  int currentIndex = 0;
 
   BitmapDescriptor? cartBitmap;
 
@@ -167,7 +168,7 @@ class _HomePageState extends State<HomePage>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
+              const Text(
                 'Solidarius',
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
@@ -176,16 +177,12 @@ class _HomePageState extends State<HomePage>
               ),
               ElevatedButton(
                 onPressed: () {
-                  setState(() {
-                    perfil = 0;
-                  });
+                  Navigator.of(context).pushNamed(Routes.home);
                 },
                 child: const Text('Perfil Usuário'),
               ),
               ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed(Routes.homeOng);
-                },
+                onPressed: () {},
                 child: const Text('Perfil ONG'),
               ),
               ElevatedButton(
@@ -201,6 +198,28 @@ class _HomePageState extends State<HomePage>
         ),
       ),
       key: _key,
+      bottomNavigationBar: NavigationBar(
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+        backgroundColor: AppColors.green,
+        indicatorColor: Colors.white,
+        destinations: [
+          const NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home),
+            label: '',
+          ),
+          const NavigationDestination(
+            icon: Icon(Icons.local_shipping_outlined),
+            selectedIcon: Icon(Icons.local_shipping),
+            label: '',
+          ),
+          const NavigationDestination(
+            icon: Icon(Icons.check_outlined),
+            selectedIcon: Icon(Icons.check),
+            label: '',
+          ),
+        ],
+      ),
       body: isLoadingMap
           ? const Center(
               child: CircularProgressIndicator(),
@@ -215,6 +234,41 @@ class _HomePageState extends State<HomePage>
                     });
                   },
                   markers: _getMarkers(),
+                ),
+                Positioned(
+                  top: 60,
+                  left: 20,
+                  child: Container(
+                    width: 220,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(100),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          offset: const Offset(0, 4),
+                          blurRadius: 6,
+                          spreadRadius: -1,
+                          color: Colors.black.withOpacity(0.1),
+                        ),
+                        BoxShadow(
+                          offset: const Offset(0, 2),
+                          blurRadius: 4,
+                          spreadRadius: -2,
+                          color: Colors.black.withOpacity(0.1),
+                        ),
+                      ],
+                    ),
+                    child: const Center(
+                      child: Text(
+                        'Doações Disponíveis',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
                 Positioned(
                   top: 60,
@@ -367,6 +421,98 @@ class _HomePageState extends State<HomePage>
                                                   '${doacoesFiltradas[index].distancia} distância'),
                                             ],
                                           ),
+                                        ),
+                                        IconButton(
+                                          onPressed: () => showDialog<String>(
+                                            context: context,
+                                            builder: (BuildContext context) =>
+                                                Dialog(
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(12.0),
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: <Widget>[
+                                                    Text(
+                                                      doacoesFiltradas[index]
+                                                          .nomeEstabelecimento,
+                                                      style: const TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                        'Tipo de doação: ${doacoesFiltradas[index].tipo}'),
+                                                    Text(
+                                                        '${doacoesFiltradas[index].distancia} de distância.'),
+                                                    Text(
+                                                      'Endereço: ${doacoesFiltradas[index].endereco}',
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 16,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 15),
+                                                    Row(
+                                                      children: [
+                                                        Expanded(
+                                                          child: ElevatedButton(
+                                                            style:
+                                                                ElevatedButton
+                                                                    .styleFrom(
+                                                              backgroundColor:
+                                                                  Colors.red,
+                                                              foregroundColor:
+                                                                  Colors.white,
+                                                            ),
+                                                            onPressed: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
+                                                            },
+                                                            child: Text(
+                                                                'Cancelar'),
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          width: 10,
+                                                        ),
+                                                        Expanded(
+                                                          child: ElevatedButton(
+                                                            style:
+                                                                ElevatedButton
+                                                                    .styleFrom(
+                                                              backgroundColor:
+                                                                  AppColors
+                                                                      .green,
+                                                              foregroundColor:
+                                                                  Colors.white,
+                                                            ),
+                                                            onPressed: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
+                                                            },
+                                                            child: Text(
+                                                                'Confirmar para retirada'),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          icon: const Icon(
+                                              Icons.chevron_right_outlined),
                                         ),
                                       ],
                                     ),
